@@ -11,6 +11,8 @@ seamlessly using your own API key.
 - 🎨 **Customizable**: Easily tweak the design and functionality to suit your preferences.
 - 📱 **Responsive Design**: Optimized for both desktop and mobile devices.
 
+![GeminiChat Interface Screenshot](imgs/screenshot.png)
+
 ## 🚀 Getting Started
 
 ### Prerequisites
