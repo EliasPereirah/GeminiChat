@@ -2,7 +2,7 @@ let can_delete_history = false;
 let max_chats_history = 50;
 let model = 'gemini-1.5-flash';
 
-let MY_GEMINI_API_KEY = "";
+let MY_GEMINI_API_KEY = localStorage.getItem("MY_GEMINI_API_KEY");
 
 let settings = document.querySelector("#settings");
 settings.onclick = () => {
@@ -86,8 +86,7 @@ function getPreviousChatTopic() {
         let id = localStorage.key(i);
         id = parseInt(id);
         if (!isNaN(id)) {
-            // se for um número
-            // importante para uma ordenação correta
+            // important to the correct order
             ids.push(id);
         }
     }
@@ -96,7 +95,7 @@ function getPreviousChatTopic() {
 
     ids.forEach(key => {
         if (total_chats >= max_chats_history) {
-            // se tiver muitas mensagens removem as mais antigas
+            // if has to many messages remove the old ones
             localStorage.removeItem(key.toString());
         } else {
             all_keys.push(key);
@@ -110,9 +109,8 @@ function getPreviousChatTopic() {
             if (topic) {
                 all_topics.push({'topic': topic, 'id': id});
             }
-            // o tópico será o primeiro prompt do usuário
         } catch (error) {
-            console.log('Erro ao fazer parser do JSON: ' + error)
+            console.log('Error parser to JSON: ' + error)
         }
     });
     return all_topics;
@@ -125,7 +123,7 @@ function removeChat(div, id) {
         let content = document.querySelector(".container");
         ele.classList.add('chat_deleted_msg');
         if (parseInt(id) === chat_id) {
-            // chat atual - então limpa a conversa em tela
+            // current chat - so clean the screen
             let all_user_msg = document.querySelectorAll("#chat-messages .message.user");
             let all_bot_msg = document.querySelectorAll("#chat-messages .message.bot");
             if (all_user_msg) {
@@ -138,34 +136,34 @@ function removeChat(div, id) {
                     bm.remove();
                 })
             }
-            ele.innerText = "Chat atual apagado!";
+            ele.innerText = "Current chat deleted!";
             content.prepend(ele);
         } else {
             content.prepend(ele);
-            ele.innerText = "Chat apagado!";
+            ele.innerText = "Chat deleted!";
         }
         setTimeout(() => {
             ele.remove();
         }, 2000);
         div.remove();
     } else {
-        //div.id será o id do chat (key de localStorage)
-        // loadOldConversation(div.id); // atualiza a conversa
+        //div.id will be id of chat (key de localStorage)
+        // loadOldConversation(div.id); // update conversation
     }
 }
 
 /**
- * Inicia um novo chat sem qualquer contexto de conversa passada
- * **/
+ * Starts a new chat without any context from past conversation
+ **/
 function newChat() {
     removeScreenConversation();
-    conversations.messages = []; // limpa conversa passada caso aja
-    chat_id = new Date().getTime(); // gera novo chat_id
+    conversations.messages = []; // clean old conversation
+    chat_id = new Date().getTime(); // generate a new chat_id
 }
 
 function removeScreenConversation() {
     let chatMessages = document.querySelector("#chat-messages")
-    //remove mensagens passadas em tela.
+    //remove old message on screen
     chatMessages.querySelectorAll(".message.user").forEach(userMsg => {
         userMsg.remove();
     })
@@ -176,10 +174,10 @@ function removeScreenConversation() {
 
 
 function loadOldConversation(old_talk_id) {
-    let past_talk = localStorage.getItem(old_talk_id); // pega a conversa antiga
+    let past_talk = localStorage.getItem(old_talk_id); // grab the old conversation
 
-    localStorage.removeItem(old_talk_id); // remove conversa antiga de localstorage
-    chat_id = new Date().getTime(); // renova o ID
+    localStorage.removeItem(old_talk_id); // remove old conversation from localstorage
+    chat_id = new Date().getTime(); // renew ID
 
     let btn_star_old_chat = document.querySelector("[data-id='" + old_talk_id + "']");
     btn_star_old_chat.setAttribute("data-id", chat_id);
@@ -208,7 +206,7 @@ function loadOldConversation(old_talk_id) {
 
 
     } else {
-        alert('Conversa não foi encontrada');
+        createDialog('Conversation not found!',10)
     }
     hljs.highlightAll();
     enableCopyForCode();
@@ -220,7 +218,7 @@ function loadOldChatTopics() {
     let all_topics = getPreviousChatTopic();
     let history = document.querySelector(".conversations .history");
     let to_remove = history.querySelectorAll(".topic");
-    // remove para adicionar novamente atualizado com o chat atual
+    // remove to add again updating with the current chat
     to_remove.forEach(ele => {
         ele.remove();
     })
@@ -296,7 +294,7 @@ function geminiChat() {
 
 
     let endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${MY_GEMINI_API_KEY}`
-
+    let invalid_key = false;
     fetch(endpoint, {
         method: 'POST',
         headers: {
@@ -309,17 +307,16 @@ function geminiChat() {
         })
         .then(data => {
             let text;
-            // Processar a resposta da API aqui
             if (typeof data === "object") {
                 try {
                     text = data.candidates[0].content.parts[0].text;
                 } catch {
                     text = '<pre>' + JSON.stringify(data) + '</pre>';
                     try {
-                        // Verifica se é erro de API KEY inválida
+                        // Verify if it is an error with the api key being not valid
                         let tt = data.error.message;
                         if (tt.match(/API key not valid/)) {
-                            //  localStorage.setItem('MY_GEMINI_API_KEY', '');
+                            invalid_key = true;
                         }
                     } catch {
                         console.log('some')
@@ -336,6 +333,10 @@ function geminiChat() {
         }).finally(() => {
         toggleAnimation();
         enableChat();
+        if(invalid_key){
+            localStorage.setItem('MY_GEMINI_API_KEY', ''); // clean api key
+            setApiKeyDialog();
+        }
         hljs.highlightAll();
         enableCopyForCode();
     })
@@ -345,7 +346,7 @@ function geminiChat() {
 //Chat using PHP server code
 function chat() {
     return geminiChat();
-    // O codigo abaixo não será usado
+    // for now this code is not being used
     chat_endpoint = document.URL + "/api/chat.php";
     fetch(chat_endpoint, {
         method: 'POST',
@@ -356,7 +357,7 @@ function chat() {
     })
         .then(response => {
             if (!response.ok) {
-                throw new Error('Ocorreu um erro ao enviar os dados.');
+                throw new Error('Error on sending data');
             }
             return response.json();
         })
@@ -371,23 +372,21 @@ function chat() {
                 if (data.error_msg) {
                     addWarning(data.error_msg, false)
                 } else {
-                    addWarning('Houve um erro, JSON recebido é inválido: ' + data, false);
+                    addWarning('Bad JSON: ' + data, false);
                 }
             }
             toggleAnimation();
             enableChat();
         })
         .catch(error => {
-            // erro
+            // error
             chat_textarea.value = conversations.messages.pop().content.trim();
-            // remove conversa do histórico a adiciona de volta ao textarea
             toggleAnimation();
             enableChat();
             console.error('Error:', error);
             addWarning('Error: ' + error, false);
             // chat_textarea.focus();
             document.querySelector(".message:nth-last-of-type(1)").remove();
-            // remove última mensagem devido o erro
         })
 }
 
@@ -483,8 +482,6 @@ function closeDialogs() {
     if (dialog_close) {
         dialog_close.forEach(dc => {
             if (dc.classList.contains('can_delete')) {
-                // So simula clique se poder deletar
-                // Do contrário apes o usuário pode fechar o dialogo
                 dc.click();
             }
         })
@@ -513,12 +510,11 @@ function enableCopyForCode(){
 
 
 /**
- * adiciona uma mensagem na tela
- * - text: o texto que será adicionado
- * - duration_seconds: opcional por quanto tempo a mensagem fica na tela, 0, significa até que o usuário clique no X (default)
- * - add_class_name: opcional - cria adiciona uma classe ao elemento que recebe a mensagem
- * - can_delete - Caso false o dialogo só será fechado por ação do usuário
- *  Do contrário sempre que uma nova mensagem é enviada no chat o diálogo será removido
+ * add a message on the screen
+ * - text: text to be added
+ * - duration_seconds: optional - total duration in seconds
+ * - add_class_name: optional - add a personalized class to add new style to dialog
+ * - can_delete - If the user will be able to remove the dialog
  **/
 function createDialog(text, duration_seconds = 0, add_class_name = '', can_delete = true) {
     let all_dialogs = document.getElementById("all_dialogs");
@@ -534,7 +530,6 @@ function createDialog(text, duration_seconds = 0, add_class_name = '', can_delet
     dialog.style.display = 'block';
     all_dialogs.append(dialog);
     if (can_delete) {
-        // Pode deletar sem clique do usuário
         dialog_close.classList.add('can_delete');
     }
     dialog_close.onclick = () => {
@@ -550,3 +545,32 @@ function createDialog(text, duration_seconds = 0, add_class_name = '', can_delet
 
 
 }
+
+function setApiKey(){
+    let set_api_key = document.querySelector('#set_api_key');
+    if(set_api_key){
+       let api_key = set_api_key.value.trim();
+        if(api_key.length > 10){
+            MY_GEMINI_API_KEY = api_key;
+            localStorage.setItem("MY_GEMINI_API_KEY", api_key);
+            closeDialogs();
+            createDialog('Save with success!',5);
+        }
+    }
+}
+
+function setApiKeyDialog(){
+    let cnt =
+        `<div>Enter your Gemini API key!</div>
+         <input id="set_api_key" type="password" name="api_key" placeholder="Your API key">
+         <button onclick="setApiKey()">Save</button>
+         <div>If you don't have an API key yet, get it for free here 
+         <a target="_blank" href="https://aistudio.google.com/app/apikey">https://aistudio.google.com/app/apikey</a>
+         </div>`;
+    createDialog(cnt,0,'setApiDialog');
+}
+
+if(!MY_GEMINI_API_KEY){
+    setApiKeyDialog();
+}
+

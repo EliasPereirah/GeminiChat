@@ -85,6 +85,26 @@ th {
     border-radius: 5px;
 }
 
+.setApiDialog{
+    padding: 25px 16px 33px;
+    text-align: center;
+}
+.setApiDialog input, .setApiDialog button{
+    padding: 8px;
+    border: none;
+    border-radius: 4px;
+    color: #7578e1;
+}
+.setApiDialog input{
+    margin: 16px 0;
+}
+
+.setApiDialog button{
+    background-color: #7578e1;
+    color: #fff;
+    cursor: pointer;
+}
+
 a {
     text-decoration: none;
 }
@@ -145,7 +165,6 @@ a {
     display: ruby-text;
     text-align: justify;
 }
-
 
 .bot:before, .user:before, .start_msg:before {
     content: "AI: ";
