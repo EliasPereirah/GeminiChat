@@ -160,9 +160,6 @@ a {
     background-color: #f7f6f3;
     border: 1px solid #f1f0f0;
     border-radius: 7px;
-    padding: 0 8px;
-    width: 100%;
-    display: ruby-text;
     text-align: justify;
 }
 
