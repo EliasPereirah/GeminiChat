@@ -330,7 +330,7 @@ input:checked + .slider:before {
 .user, .bot {
     padding: 4px;
     word-break: break-word;
-    width: 100%;
+    width: 99.5%;
     box-sizing: border-box;
     animation: change-color 2s forwards;
 
