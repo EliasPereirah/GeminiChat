@@ -47,3 +47,14 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 ## ⚠️ Disclaimer
 
 This project is not affiliated with or officially endorsed by Google. Use of the Gemini AI API is subject to Google's terms and conditions.
+
+
+
+
+
+----------
+
+Aqui está uma versão mais amigável e convidativa para o Reddit:
+
+---
+
