@@ -1,6 +1,6 @@
 let can_delete_history = false;
 let max_chats_history = 50;
-let model = 'gemini-1.5-flash';
+let model = 'gemini-1.5-flash-002'; // gemini-1.5-flash | gemini-1.5-pro-002 | etc
 
 let MY_GEMINI_API_KEY = localStorage.getItem("MY_GEMINI_API_KEY");
 
@@ -288,8 +288,8 @@ function geminiChat() {
 
 
     data.generationConfig = {
-        "maxOutputTokens": 1000000,
-        "temperature": 0.9
+        //"maxOutputTokens": 1000000,
+        //"temperature": 0.9
     };
 
 
