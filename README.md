@@ -50,11 +50,3 @@ This project is not affiliated with or officially endorsed by Google. Use of the
 
 
 
-
-
-----------
-
-Aqui está uma versão mais amigável e convidativa para o Reddit:
-
----
-
