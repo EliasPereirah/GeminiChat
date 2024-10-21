@@ -1,4 +1,6 @@
 # GeminiChat: Open-Source Web Interface for Google's Gemini AI
+**New:** Check out the new project to chat not only with Gemini but with several other models, whether from OpenAI, Groq, Ollama, Cohere or Anthropic https://github.com/EliasPereirah/OrionChat
+
 
 **GeminiChat** is an open-source, web-based application that allows you to interact with Google's powerful Gemini AI
 seamlessly using your own API key.
